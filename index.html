@@ -152,7 +152,7 @@ function setTimer() {
 var ranges = [ 'control', 'algorithm', 'mapRefresh' ];
 var eventChange = document.createEvent('HTMLEvents');
 eventChange.initEvent('change', true, true);
-for (var i in ranges) {
+for (var i in ranges) {
 	var range = ranges[i];
 	document.getElementById(range).addEventListener('change', function () {
 		var value = parseInt(this.value), prefix;
