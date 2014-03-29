@@ -30,9 +30,9 @@ button>img{vertical-align:-1.5px;margin-right:3px;}
 #settings input[disabled]{opacity:0.6;cursor:not-allowed}
 #settings input[type=number],#settings input[type=text]{width:50px;}
 #settings input[type=range]{position:relative;display:block;left:0;width:180px;padding:1px;}
+#settings label{position:absolute;left:120px;}
+#settings label>input{position:relative;left:initial;display:block;}
 #settings #total{position:absolute;right:5px;display:inline-block;bottom:0;min-width:initial;line-height:25px;}
-#settings #total>label{display:inline-block;min-width:inherit;vertical-align:-13px;margin-bottom:-7px;margin-right:3px;}
-#settings #total>label>input{position:inherit;left:inherit;display:block;}
 #settings #total>img,#settings #total>span{vertical-align:middle;}
 hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 .text{width:100px;text-align:center;margin:0;padding:0;}
@@ -58,11 +58,11 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 		<div>
 			<button type="submit" class="blue" id="start">Start</button>
 			<button type="button" class="cyan" id="stop" disabled>Pause</button>
+			<label>
+				<input type="checkbox" id="follow" checked />
+				<img alt="Follow nodes" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXUlEQVR4Xu2Q0QmAMAxEz+AAuokdwck7gm7QFTKC93EoWIKW/vbB4yAh9xEMMNGFFmWE0xVCN5kmuwcR9X6jWQlT+xf1sZjRxoEXhkZ6CxL1noKT7sqn4McjPS4ZXDjPDfJSaA7uAAAAAElFTkSuQmCC" />
+			</label>
 			<div id="total">
-				<label>
-					<input type="checkbox" id="follow" checked />
-					<img alt="Follow nodes" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXUlEQVR4Xu2Q0QmAMAxEz+AAuokdwck7gm7QFTKC93EoWIKW/vbB4yAh9xEMMNGFFmWE0xVCN5kmuwcR9X6jWQlT+xf1sZjRxoEXhkZ6CxL1noKT7sqn4McjPS4ZXDjPDfJSaA7uAAAAAElFTkSuQmCC" />
-				</label>
 				<img alt="Time" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAA/UlEQVQ4ja3SPyuGURgG8N/jXd7XRhabgWKWEqWIgbL4EMQmk0HeQSIfwWfgA8hksMugSITJIJM/pRiex+t0nOftKa7pnPu+7qvrPtfhj6hV4KyiB3f4iJsdFQR68YQNLCErI2aYStSbwXkMu6FI6GAFz6i3cXaKAyzHjQZ2AtEm+susFtxOfh5xFme4xyeucYJHnCcE3jGIq+/CGroi0kIhtp4Q6Jan09o183vvQ2ziJSFQE6Uxj4kEsQyTmAsLDXk8VbEnT6tl+xUPGK0wPI5bvMWNDNsYbjM8gi3B/vG3zLCIPhzhoqgPYQY32I8HUqhjGgPF/RLH8vz/F1+T0ycUy1HYAAAAAABJRU5ErkJggg==" />
 				<span id="time">0.00s</span>
 			</div>
@@ -104,7 +104,7 @@ function newDestinations(center) {
 	var destinationsPoints = parseInt(document.getElementById('destinations').value);
 	var coverageRadius = parseInt(document.getElementById('coverage').value);
 	var minDistance = 0.7 * coverageRadius;
-	var maxDistance = coverageRadius * (nodes.length - destinationsPoints + 1);
+	var maxDistance = 0.9 * coverageRadius * (nodes.length - destinationsPoints + 1);
 	for (var i = 0; i < destinationsPoints; i++) {
 		lastDirection = lastDirection + random(-Math.PI / 3, Math.PI / 3);
 		lastPosition = lastPosition.destination(lastDirection, random(i == destinationsPoints-1 ? maxDistance-minDistance : minDistance, maxDistance));
