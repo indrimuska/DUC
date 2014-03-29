@@ -201,7 +201,7 @@ function Map() {
 			});
 		else polyline.setPath(nodesGM);
 		// fit bounds
-		if (document.getElementById('follow').checked && new Date().getTime() - lastFitTime.getTime() > 100) {
+		if (running && document.getElementById('follow').checked && new Date().getTime() - lastFitTime.getTime() > 100) {
 			lastFitTime = new Date();
 			var bounds = new google.maps.LatLngBounds();
 			for (var i in destinations) bounds.extend(destinations[i].toGoogleMaps());
@@ -221,7 +221,6 @@ function Map() {
 	});
 	document.getElementById('mapRefresh').addEventListener('change', function () {
 		clearInterval(mapRefresh);
-		if (!running) return;
-		that.start();
+		if (running) that.start();
 	});
 }
