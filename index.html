@@ -16,7 +16,7 @@ button.blue:hover{color:#fff;background:#3276b1;border-color:#285e8e;}
 button.green{color:#fff;background:#5cb85c;border-color:#4cae4c;}
 button.green:hover{color:#fff;background:#47a447;border-color:#398439;}
 button.cyan{color:#fff;background:#5bc0de;border-color:#46b8da;}
-button.cyan:hover{color:#fff;background:#5bc0de;border-color:#46b8da;}
+button.cyan:hover{color:#fff;background:#39b3d7;border-color:#269abc;}
 button.yellow{color:#fff;background:#f0ad4e;border-color:#eea236;}
 button.yellow:hover{color:#fff;background:#ed9c28;border-color:#d58512;}
 button.red{color:#fff;background:#d9534f;border-color:#d43f3a;}
@@ -36,6 +36,8 @@ button>img{vertical-align:-1.5px;margin-right:3px;}
 #settings #total>img,#settings #total>span{vertical-align:middle;}
 hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 .text{width:100px;text-align:center;margin:0;padding:0;}
+.node{color:#5bc0de;text-shadow:0 1px 1px rgba(0,0,0,.6);}
+.destination{color:rgba(255,0,0,.6);}
 </style>
 </head>
 <body>
@@ -81,7 +83,7 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 // random in range
 function random(min, max) { return (1 - Math.random()) * (max - min) + min; }
 
-// nodes and points need to be global
+// nodes, destinations and selected masters need to be global (required for the Map class)
 var nodes = [], destinations = [], masters = [], map = new Map();
 
 // nodes and destinations initializer

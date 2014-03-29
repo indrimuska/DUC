@@ -1,5 +1,5 @@
 // requires:
-//    - index.html
+//    - index.html (nodes, destinations, masters, UI-interface)
 //    - https://maps.googleapis.com/maps/api/js?sensor=false
 //    - src/MarkerWithLabel.js
 //    - src/Coordinates.js
@@ -69,12 +69,6 @@ function Map() {
 	function getScale() {
 		return Math.pow(2, map.getZoom()) / 156543.03392;
 	}
-	function svgCirlce(x, y, r) {
-		return	'M' + [ x, y ].join(' ') +
-				' m ' + (-r) + ',0' +
-				' a ' + [ r, r ].join(',') + ' 0 1,1 ' + (r * 2) + ',0' +
-				' a ' + [ r, r ].join(',') + ' 0 1,1 ' + (-r * 2) + ',0';
-	}
 	function svgArcedTriangle(r, h, overture) {
 		var cosOverture = Math.cos(overture / 2);
 		var sinOverture = Math.cos(overture / 2);
@@ -102,7 +96,7 @@ function Map() {
 						clickable: false,
 						icon: { path: '', zIndex: 1 },
 						labelContent: i.toString(),
-						labelClass: 'text',
+						labelClass: 'text destination',
 						labelStyle: { 'font-size': 3 * scale + 'px' },
 						labelAnchor: new google.maps.Point(50, -1.3 * scale)
 					}),
@@ -136,7 +130,7 @@ function Map() {
 						clickable: false,
 						icon: { path: '', zIndex: 3 },
 						labelContent: i.toString(),
-						labelClass: 'text',
+						labelClass: 'text node',
 						labelStyle: { 'font-size': 2 * scale + 'px' },
 						labelAnchor: new google.maps.Point(50, -scale)
 					}),
@@ -144,7 +138,7 @@ function Map() {
 						map: map,
 						center: center,
 						radius: 0.5,
-						fillColor: '#35b3e5',
+						fillColor: '#5bc0de',
 						fillOpacity: 1,
 						strokeColor: '#004F74',
 						strokeWeight: 1,
@@ -171,7 +165,7 @@ function Map() {
 						icon: {
 							path: svgArcedTriangle(scale, scale, Math.PI/2),
 							rotation: orientation,
-							fillColor: '#35b3e5',
+							fillColor: '#5bc0de',
 							fillOpacity: 1,
 							strokeColor: '#004F74',
 							strokeWeight: 1,
@@ -183,7 +177,7 @@ function Map() {
 			else {
 				mapNodes[i].text.setPosition(center);
 				mapNodes[i].text.labelStyle = { 'font-size': 3 * scale + 'px' };
-				mapNodes[i].text.labelAnchor = new google.maps.Point(50, -scale);
+				mapNodes[i].text.labelAnchor = new google.maps.Point(50, 5 * scale);
 				mapNodes[i].point.setCenter(center);
 				mapNodes[i].coverage.setCenter(center);
 				var icon = mapNodes[i].orientation.icon;
