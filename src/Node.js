@@ -115,21 +115,20 @@ function Node(number, coordinates, orientation) {
 	}
 	function directionPoints(from, to) {
 		var points = new Array();
-		// average latitude (required for the Mercator inverse) - don't include destination point, it could be very far
-		var lats = [ from.lat, prevNode ? prevNode.coordinates.lat : null, nextNode ? nextNode.coordinates.lat : null ].filter(function (v) { return v; });
-		var avgLat = lats.reduce(function (a, b) { return a + b; }) / lats.length;
+		// start point latituted (required for the Mercator inverse variant)
+		var lat = from.lat;
 		// projected coordinates
-		from = from.toSimplestProjection();
-		to = to.toSimplestProjection();
+		from = from.toMercatorProjectionVariant();
+		to = to.toMercatorProjectionVariant();
 		// line parameters
 		var line = lineParameters(from, to);
 		// intersection points with the previous neighbour
-		if (prevNode) points = points.concat(intersectLineAndCircle(line, prevNode.coordinates.toSimplestProjection(), radius, from));
+		if (prevNode) points = points.concat(intersectLineAndCircle(line, prevNode.coordinates.toMercatorProjectionVariant(), radius, from));
 		// intersection points with the next neighbour
-		if (nextNode) points = points.concat(intersectLineAndCircle(line, nextNode.coordinates.toSimplestProjection(), radius, from));
+		if (nextNode) points = points.concat(intersectLineAndCircle(line, nextNode.coordinates.toMercatorProjectionVariant(), radius, from));
 		// convert from Mercator projection to Geo-coordinates
 		for (var i in points) {
-			var point = new Coordinates().fromSimplestProjection(points[i], avgLat);
+			var point = new Coordinates().fromMercatorProjectionVariant(points[i], lat);
 			point.alt = (from.alt + to.alt) / 2;
 			points[i] = point;
 		}
