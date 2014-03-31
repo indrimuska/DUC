@@ -10,28 +10,13 @@ function Coordinates(lat, lng, alt) {
 	this.alt = alt || 0;
 	
 	var earthRadius = 6378137;
+	var eccentricity = 0.081819190842622;
 	var clockwiseUsage = false; // from North
 	// conversions
 	this.toGoogleMaps = function () {
 		return google && google.maps ? new google.maps.LatLng(this.lat, this.lng) : null;
 	}
-	this.toMercatorProjection = function () {
-		var rLat = Math.toRadians(this.lat);
-		var scaledRadius = earthRadius * Math.cos(rLat);
-		return {
-			x: scaledRadius * Math.toRadians(this.lng),
-			y: scaledRadius * Math.log(Math.tan(Math.PI / 4 + rLat / 2)),
-			z: this.alt
-		};
-	}
-	this.fromMercatorProjection = function (point, lat) {
-		var scaledRadius = earthRadius * Math.cos(lat ? Math.toRadians(lat) : 0);
-		this.lat = Math.toDegrees(2 * Math.atan(Math.exp(point.y / scaledRadius)) - Math.PI / 2);
-		this.lng = Math.toDegrees(point.x / scaledRadius);
-		this.alt = point.z;
-		return this;
-	}
-	this.toSimplestProjection = function () {
+	this.toEquirectangularProjection = function () {
 		var rLat = Math.toRadians(this.lat);
 		return {
 			x: earthRadius * Math.cos(rLat) * Math.toRadians(this.lng),
@@ -39,9 +24,51 @@ function Coordinates(lat, lng, alt) {
 			z: this.alt
 		};
 	}
-	this.fromSimplestProjection = function (point) {
+	this.fromEquirectangularProjection = function (point) {
 		this.lat = Math.toDegrees(point.y / earthRadius);
 		this.lng = Math.toDegrees(point.x / (earthRadius * Math.cos(Math.toRadians(this.lat))));
+		this.alt = point.z;
+		return this;
+	}
+	this.toMercatorProjection = function () {
+		var rLat = Math.toRadians(Math.min(89.5, Math.max(-89.5, this.lat)));
+		var eSinLat = eccentricity * Math.sin(rLat);
+		return {
+			x: earthRadius * Math.toRadians(this.lng),
+			y: earthRadius * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - eSinLat) / (1 + eSinLat), eccentricity / 2)),
+			z: this.alt
+		};
+	}
+	this.fromMercatorProjection = function (point) {
+		var halfPI = Math.PI / 2;
+		var expYR = Math.exp(point.y / earthRadius);
+		var lat = 2 * Math.atan(expYR) - halfPI;
+		for (var i = 0, dLat = 1; Math.abs(dLat) > 1e-20 && i < 20; i++) {
+			var eSinLat = eccentricity * Math.sin(lat);
+			dLat = 2 * Math.atan(expYR / Math.pow((1 - eSinLat) / (1 + eSinLat), eccentricity / 2)) - halfPI - lat;
+			lat += dLat;
+		}
+		this.lat = Math.toDegrees(lat);
+		this.lng = Math.toDegrees(point.x / earthRadius);
+		this.alt = point.z;
+		return this;
+	}
+	this.toMercatorProjectionVariant = function () {
+		var rLat = Math.toRadians(Math.min(89.5, Math.max(-89.5, this.lat)));
+		var eSinLat = eccentricity * Math.sin(rLat);
+		var scaledRadius = earthRadius * Math.cos(rLat);
+		return {
+			x: scaledRadius * Math.toRadians(this.lng),
+			y: scaledRadius * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - eSinLat) / (1 + eSinLat), eccentricity / 2)),
+			z: this.alt
+		};
+	}
+	this.fromMercatorProjectionVariant = function (point, nearestLat) {
+		var rLat = Math.toRadians(nearestLat || 0);
+		var scaledRadius = earthRadius * Math.cos(rLat);
+		var eSinLat = eccentricity * Math.sin(rLat);
+		this.lat = Math.toDegrees(2 * Math.atan(Math.exp(point.y / scaledRadius) / Math.pow((1 - eSinLat) / (1 + eSinLat), eccentricity / 2)) - Math.PI / 2);
+		this.lng = Math.toDegrees(point.x / scaledRadius);
 		this.alt = point.z;
 		return this;
 	}
@@ -79,7 +106,7 @@ function Coordinates(lat, lng, alt) {
 		var dR = distance / earthRadius;
 		var rLat = Math.toRadians(this.lat);
 		var lat = Math.asin(Math.sin(rLat) * Math.cos(dR) + Math.cos(rLat) * Math.sin(dR) * Math.cos(bearing));
-		var lng = Math.toRadians(this.lng) + Math.atan2(Math.sin(bearing) * Math.sin(dR) * Math.cos(rLat), Math.cos(dR) - Math.sin(rLat) * Math.sin(lat))
+		var lng = Math.toRadians(this.lng) + Math.atan2(Math.sin(bearing) * Math.sin(dR) * Math.cos(rLat), Math.cos(dR) - Math.sin(rLat) * Math.sin(lat));
 		return new Coordinates(Math.toDegrees(lat), Math.toDegrees(lng), this.alt);
 	}
 	this.middlePointTo = function (point) {
