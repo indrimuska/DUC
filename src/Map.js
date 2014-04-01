@@ -66,8 +66,8 @@ function Map() {
 		for (var i in nodes) nodes[i].stop();
 	}
 	
-	function getScale() {
-		return Math.pow(2, map.getZoom()) / 156543.03392;
+	function getScale(latitude) {
+		return Math.pow(2, map.getZoom()) / 156543.03392 / (!latitude ? 1 : Math.cos(latitude * Math.PI / 180));
 	}
 	function svgArcedTriangle(r, h, overture) {
 		var cosOverture = Math.cos(overture / 2);
@@ -83,11 +83,11 @@ function Map() {
 	function draw() {
 		// not intialized yet
 		if (destinations.length + nodes.length <= 0) return;
-		var scale = getScale();
-		var nodesGM = nodes.map(function (value) { return value.position().coordinates.toGoogleMaps(); });
+		var scale, nodesGM = nodes.map(function (value) { return value.position().coordinates.toGoogleMaps(); });
 		// destinations
 		for (var i = 0; i < destinations.length; i++) {
 			var destination = destinations[i].toGoogleMaps();
+			scale = getScale(destination.lat());
 			if (!mapDestinations[i])
 				mapDestinations[i] = {
 					text: new MarkerWithLabel({
@@ -122,6 +122,7 @@ function Map() {
 		for (var i = 0; i < nodes.length; i++) {
 			var center = nodesGM[i];
 			var orientation = -Math.toDegrees(nodes[i].position().orientation);
+			scale = getScale(center.lat());
 			if (!mapNodes[i])
 				mapNodes[i] = {
 					text: new MarkerWithLabel({
@@ -163,7 +164,7 @@ function Map() {
 						position: center,
 						clickable: false,
 						icon: {
-							path: svgArcedTriangle(scale, scale, Math.PI/2),
+							path: svgArcedTriangle(scale * 2 / 3, scale * 2 / 3, Math.PI / 2),
 							rotation: orientation,
 							fillColor: '#5bc0de',
 							fillOpacity: 1,
@@ -181,7 +182,7 @@ function Map() {
 				mapNodes[i].point.setCenter(center);
 				mapNodes[i].coverage.setCenter(center);
 				var icon = mapNodes[i].orientation.icon;
-				icon.path = svgArcedTriangle(scale, scale, Math.PI/2);
+				icon.path = svgArcedTriangle(scale * 2 / 3, scale * 2 / 3, Math.PI / 2);
 				icon.rotation = orientation;
 				mapNodes[i].orientation.setIcon(icon);
 				mapNodes[i].orientation.setPosition(center);
