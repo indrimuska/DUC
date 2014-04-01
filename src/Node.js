@@ -129,7 +129,7 @@ function Node(number, coordinates, orientation) {
 		// convert from Mercator projection to Geo-coordinates
 		for (var i in points) {
 			var point = new Coordinates().fromMercatorProjectionVariant(points[i], lat);
-			point.alt = (from.alt + to.alt) / 2;
+			point.alt = (from.z + to.z) / 2;
 			points[i] = point;
 		}
 		return points;
@@ -176,7 +176,7 @@ function Node(number, coordinates, orientation) {
 			var point = points[i];
 			var isInsidePrev = !prevNode || isInsideCircle(point, prevNode.coordinates, radius);
 			var isInsideNext = !nextNode || isInsideCircle(point, nextNode.coordinates, radius);
-			var sameDirection = coordinates.initialBearingTo(point) - direction <= precision;
+			var sameDirection = Math.abs(coordinates.initialBearingTo(point) - direction) <= precision;
 			if (isInsidePrev && isInsideNext && sameDirection && !isArrived(point))
 				return point;
 		}
@@ -235,10 +235,9 @@ function Node(number, coordinates, orientation) {
 		var rotation, destination;
 		// calculate possible destinations (middle point is for prevent deadlock on moving)
 		var destinations = arrival ? [ arrival ] : [ target, middlePoint() ];
-		//destinations = [ target, middlePoint() ];
 		// neighbourhood constant
 		var phi = neighbourhoodFunction(number - master, sigma);
-		// iteration possible destinations
+		// iterate possible destinations
 		for (var i in destinations) {
 			// calculate destination angle
 			rotation = getOrientation(destinations[i]);
