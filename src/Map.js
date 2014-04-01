@@ -25,6 +25,7 @@ function Map() {
 		}
 	});
 	map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('tilt'));
+	map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('fullscreen'));
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('settings'));
 	
 	this.init = function (end) {
@@ -111,6 +112,16 @@ function Map() {
 						strokeOpacity: 1,
 						clickable: false,
 						zIndex: 1
+					}),
+					pin: new google.maps.Marker({
+						map: map,
+						position: destination,
+						clickable: false,
+						icon: {
+							url: document.getElementById('destination').src,
+							anchor: new google.maps.Point(7, 28),
+							zIndex: 1
+						}
 					})
 				};
 			else {
@@ -213,12 +224,22 @@ function Map() {
 	
 	// listeners
 	google.maps.event.addListener(map, 'zoom_changed', draw);
-	//google.maps.event.addListener(map, 'bounds_changed', draw);
 	google.maps.event.addListener(map, 'idle', function () {
 		document.getElementById('start').focus();
 	});
 	document.getElementById('tilt').addEventListener('click', function () {
 		map.setTilt((map.getTilt() + 45) % 90);
+	});
+	document.getElementById('fullscreen').addEventListener('click', function () {
+		var mapDiv = document.getElementById('map');
+		var prefixes = [ '', 'moz', 'webkit', 'o', 'ms' ];
+		for (var i in prefixes) {
+			var prefix = prefixes[i];
+			if (typeof mapDiv[prefix + 'RequestFullScreen'] != 'undefined') {
+				mapDiv[prefix + (document[prefix + 'IsFullScreen'] ? 'Cancel' : 'Request') + 'FullScreen']();
+				break;
+			}
+		}
 	});
 	document.getElementById('mapRefresh').addEventListener('change', function () {
 		clearInterval(mapRefresh);
