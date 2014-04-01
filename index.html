@@ -22,20 +22,28 @@ button.yellow:hover{color:#fff;background:#ed9c28;border-color:#d58512;}
 button.red{color:#fff;background:#d9534f;border-color:#d43f3a;}
 button.red:hover{color:#fff;background:#d2322d;border-color:#ac2925;}
 button>img{vertical-align:-1.5px;margin-right:3px;}
-#controls{display:none;}
+#hidden{display:none;}
 #tilt{cursor:pointer;margin-right:34px;margin-top:-5px;}
 #fullscreen{cursor:pointer;margin-right:34px;margin-top:5px;}
-#settings{color:#7f7f7f;background:#fff;box-shadow:0 1px 3px #666;border-radius:2px;padding:10px;margin:10px;}
-#settings div{position:relative;line-height:18px;min-width:195px;}
-#settings input{color:#666;border:0;border-bottom:1px solid #999;position:absolute;left:140px;outline:none;padding:1px;margin:0;}
-#settings input.error{color:#a94442;font-weight:bold;}
-#settings input[disabled]{opacity:0.6;cursor:not-allowed}
-#settings input[type=number],#settings input[type=text]{width:50px;}
-#settings input[type=range]{position:relative;display:block;left:0;width:180px;padding:1px;}
+#controls{margin:10px;}
+#controls #settings,#controls #sensorSettings{color:#7f7f7f;background:#fff;box-shadow:0 1px 3px #666;border-radius:2px;padding:10px;}
+#controls div{position:relative;line-height:18px;min-width:195px;}
+#controls input{color:#666;border:0;border-bottom:1px solid #999;position:absolute;left:140px;outline:none;padding:1px;margin:0;}
+#controls input.error{color:#a94442;font-weight:bold;}
+#controls input[disabled]{opacity:0.6;cursor:not-allowed}
+#controls input[type=number],#settings input[type=text]{width:50px;}
+#controls input[type=range]{position:relative;display:block;left:0;width:190px;padding:1px;}
 #settings label{position:absolute;left:120px;}
 #settings label>input{position:relative;left:initial;display:block;}
-#settings #total{position:absolute;right:5px;display:inline-block;bottom:0;min-width:initial;line-height:25px;}
+#settings #total{position:absolute;left:143px;display:inline-block;bottom:0;min-width:initial;line-height:25px;white-space:nowrap;}
 #settings #total>img,#settings #total>span{vertical-align:middle;}
+#controls #sensorSettings{margin-top:10px;}
+#quadcopter{float:left;width:80px;height:80px;margin-right:10px;}
+#sensorSettings>h3{margin:0;padding:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:106px;}
+#sensorSettings>hr{margin:4px 0px;}
+#sensorSettings>div{position:relative;}
+#controls #sensorSettings input{left:160px;width:30px;}
+#controls #sensorSettings input[type=checkbox]{width:initial;height:initial;margin-top:1px;}
 hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 .text{width:100px;text-align:center;margin:0;padding:0;}
 .node{color:#5bc0de;text-shadow:0 1px 1px rgba(0,0,0,.6);}
@@ -44,34 +52,46 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 </head>
 <body>
 
-<div id="controls">
+<div id="hidden">
 	<img alt="Tilt" id="tilt" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAFtSURBVHja1JQ9bsJAEEbfrH9whUhhi4iCA6SDHAFxFVpfhxQ0SJyD0kVEZ26AjEgRQoRkTMymwCExxkoUnCKftMU33nlezc6OaK2pWiaAiLKAW8C9gvUERMAeEAFph2E41FcoDMMhSPvIQxRIV1cgkC6IUoCquKRKAUbFUMME5NKXJElYr9cn73keq9Xq5BuNBrZtX0oVs+x30+mU2Wx28r7vMxqNTr7T6dDv98tb6lxxHBNFEZ7nfSmUyvkoiojjGMdxikcFcYA7rQ+PH8HlckmSJLmNrVaLxWKRi9m2TbPZ/ISJugfCwkk3mw3j8Zg0TXNx3/eZTCb5GzEMBoMB9Xo9f/3n0CAICsAypWlKEATf19R1XXq9XmGjZVkX44ZxsSPFqfhFOYo/0P+Dbufz+cNPkw6HQ6FDsvztR/PXgBugeeVwSYEl8GxkQxVAZ1CjbMiUSAM74AV4BRI5DmksoJYt8xfQtwy8A/bvAwDr7THsYuJubgAAAABJRU5ErkJggg==" />
 	<img alt="Fullscreen" id="fullscreen" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAJNSURBVHjarJTJUuJQGIW/m8GkcMGgsRotSmABbmChKzZa5Qv4Cr6WvfJNwA1vEBnKBTJIW4xtlyQhHdILaTqg0k6n6i5y7s2p/z//vUf4vs9XQwEQQlKBOGB8QqsHdAEXEALEvmmaF/4nYJrmBYj9Jz2EBOLI/wKAOAIhKYAU7OHy8pLBYIAsy0QiEQqFAtlsdrFfr9cpl8uMx2M8z2Nra4vz8/OghCQBcpCZTCa4rott2+zs7JBKpZaMSyaTbG9vY9s2rusymUxWvZUlQAQZIf59NhoNKpUKs9kMAM/zME2TRqOxbmBCWWXi8TiHh4e0Wi1ubm4oFotomsbBwQH1ep1SqYTjOGSzWfb29uh0Oi9fqSCOj4+JxWILH6fTKZFIBIBYLMbu7i4bGxucnp4SDocZDocvVqu/Nn3LsnzLspY427Z927bXTV9X1pkjy/LzEoR424sKYjQaEY1GeXh4oFgs4rouJycnGIbB/f09pVJpqf3xeLyw51XRq6srEokE7XabSqWCpmn0ej0Mw2A4HHJ3d4fjOAAkEgk6nQ5nZ2frRbvdLtVqFYDNzU0KhQKZTAaATCaDZVmUy2VqtRq1Wo1wOPysfWmVCKZWKpUin8+jKMrC41wuRzqdfvH8q6KhUAhVVdF1ncFgQLPZXNq/vb2l3++j6zqqqhIKhd53pT4YKPrfSh+vr6+/vzU4Z7MZnuctcfP/H3l690IDosC31XB5JzzgBzCS56EK4M9F5dWQ+Q98wAF+Ar+AqXgKaVRAmy/lA6K/58IO4P4ZAJhp04zptM8HAAAAAElFTkSuQmCC" />
 	<img alt="Play" id="play" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAB6SURBVHjalNKxDcJgDIRRQ+hokiojMAQzMAsrsEPEAmyRJiukpwsLpE7Do+GXEBJgTrJkF5/OZzkQuKJD/Zw/VmmKZhxRZYGiEft/ALjjgjYLvK+5yQJFA2Idea0iIuVwwyGTYcEJ20zoHrvMWadX+2/AhDOaX6/xGABl3MVhFKqP0QAAAABJRU5ErkJggg==" />
 	<img alt="Pause" id="pause" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAA5SURBVHjaYvj//z8DFH/5DwFf8Ikx/v//nwEK4AwGBgZGXGJMDCSCUQ2DT8MPKP0dnxgAAAD//wMAhfIym9jDvvgAAAAASUVORK5CYII=" />
 	<img alt="Destination" id="destination" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAeCAYAAADKO/UvAAAChklEQVR4Xp2Tv08UQRTHv2/2x52AyQYoCB2FUlJqYUzwH6AhJhpbKlH+Ea0NhYU/WgtaY3KYUBgbShILQ8XvgBBu2dubnfG9uVeQPS4uTvLJNzN385n3JrPkvYcO/IrjhxwvmSfMLHPMfGfW71v7DSOGSGRzBOANszY+N0fp9DQIQHl4iGJ3FyURDNFnACssK+qSWPNtmmVrdxcWkE5OwqQpXFnCTEyA2m1gZwe5MS9SIjnseV1iuIoHnK8n5ueDQKpoLy2FTLIMCUuTmRmQc8i9f8ZVLw1JmNV0aoqITzdMvLiIaGxMMswpSWDGx5EA6A3ub/UmyZOo1YK3NrRgOx1UeS4p87DunYNsrwaSx1wN1e9k1vV6sJeXMOfnwWw3NoKgz3NZdyx1ImFKgOtDBuDseiUn9uQE9uwM5fExegcHKPb2JGUe1u3pKfoACoYFluOi3s5m6T3Ko6NAsb8vEkmZB1HR7+NKJBS6+MFvpqq3s+6JlourKySM4Us1cQxfVai6XakgCE4ZM5C8R20YeYkx0SdrDLqygfvPLy6QsyAHcMkcMfL7PaKvAD4OSTRX2kRfvIiIINf7RzcfEsGxYH4geMqHurqk/u0sc7yCMY9K50xK5OH9T2mZ+TAsUERSZ7PT8b+3t72kzP+FudFMBMqykE2GGfmDMWg64lESIoJm/b+k6ZWqaSXEpExbaQm6Rk0kxCS66Q4zprR0fXTjURRdl8QBPV2lEUNC3LASI15NvQ84KOYWEuimPlNKKq5pO6SCnn6PXaVo+k4ixWkFhWZ1m8dmtJJKK+lfFwhN2hGJFYGm+59n7/V0bQG+iaT+3K1IaoJbV2IVFTSXvNva2go5XMHw+Av6Okuhn8ctRwAAAABJRU5ErkJggg==" />
-	<form id="settings">
-		<div>Nodes: <input type="number" id="nodes" value="10" /></div>
-		<div>Destinations: <input type="number" id="destinations" value="4" /></div>
-		<div>Coverage radius [m]: <input type="number" id="coverage" value="13" /></div>
-		<div>Velocity [m/s]: <input type="number" id="velocity" value="10" step="0.5" /></div>
-		<div>Angular velocity [rad/s]: <input type="number" id="angularVelocity" value="1.5707963267948966" step="0.1" /></div>
-		<hr />
-		<div>Control period: <input type="text" id="controlLabel" readonly /> <input type="range" id="control" min="20" max="3000" step="10" value="50" /></div>
-		<div>Algorithm period: <input type="text" id="algorithmLabel" readonly /> <input type="range" id="algorithm" min="20" max="3000" step="10" value="500" /></div>
-		<div>Map refresh period: <input type="text" id="mapRefreshLabel" readonly /> <input type="range" id="mapRefresh" min="20" max="3000" step="10" value="50" /></div>
-		<hr />
-		<div>
-			<button type="submit" class="blue" id="start">Start</button>
-			<button type="button" class="cyan" id="stop" disabled>Pause</button>
-			<label>
-				<input type="checkbox" id="follow" checked />
-				<img alt="Follow nodes" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXUlEQVR4Xu2Q0QmAMAxEz+AAuokdwck7gm7QFTKC93EoWIKW/vbB4yAh9xEMMNGFFmWE0xVCN5kmuwcR9X6jWQlT+xf1sZjRxoEXhkZ6CxL1noKT7sqn4McjPS4ZXDjPDfJSaA7uAAAAAElFTkSuQmCC" />
-			</label>
-			<div id="total">
-				<img alt="Time" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAA/UlEQVQ4ja3SPyuGURgG8N/jXd7XRhabgWKWEqWIgbL4EMQmk0HeQSIfwWfgA8hksMugSITJIJM/pRiex+t0nOftKa7pnPu+7qvrPtfhj6hV4KyiB3f4iJsdFQR68YQNLCErI2aYStSbwXkMu6FI6GAFz6i3cXaKAyzHjQZ2AtEm+susFtxOfh5xFme4xyeucYJHnCcE3jGIq+/CGroi0kIhtp4Q6Jan09o183vvQ2ziJSFQE6Uxj4kEsQyTmAsLDXk8VbEnT6tl+xUPGK0wPI5bvMWNDNsYbjM8gi3B/vG3zLCIPhzhoqgPYQY32I8HUqhjGgPF/RLH8vz/F1+T0ycUy1HYAAAAAABJRU5ErkJggg==" />
-				<span id="time">0.00s</span>
+	<form id="controls">
+		<div id="settings">
+			<div>Nodes: <input type="number" id="nodes" value="10" /></div>
+			<div>Destinations: <input type="number" id="destinations" value="4" /></div>
+			<div>Coverage radius [m]: <input type="number" id="coverage" value="13" /></div>
+			<div>Velocity [m/s]: <input type="number" id="velocity" value="10" step="0.5" /></div>
+			<div>Angular velocity [rad/s]: <input type="number" id="angularVelocity" value="1.5707963267948966" step="0.1" /></div>
+			<hr />
+			<div>Control period: <input type="text" id="controlLabel" readonly /> <input type="range" id="control" min="20" max="3000" step="10" value="50" /></div>
+			<div>Algorithm period: <input type="text" id="algorithmLabel" readonly /> <input type="range" id="algorithm" min="20" max="3000" step="10" value="500" /></div>
+			<div>Map refresh period: <input type="text" id="mapRefreshLabel" readonly /> <input type="range" id="mapRefresh" min="20" max="3000" step="10" value="50" /></div>
+			<hr />
+			<div>
+				<button type="submit" class="blue" id="start">Start</button>
+				<button type="button" class="cyan" id="stop" disabled>Pause</button>
+				<label>
+					<input type="checkbox" id="follow" checked />
+					<img alt="Follow nodes" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXUlEQVR4Xu2Q0QmAMAxEz+AAuokdwck7gm7QFTKC93EoWIKW/vbB4yAh9xEMMNGFFmWE0xVCN5kmuwcR9X6jWQlT+xf1sZjRxoEXhkZ6CxL1noKT7sqn4McjPS4ZXDjPDfJSaA7uAAAAAElFTkSuQmCC" />
+				</label>
+				<div id="total">
+					<img alt="Time" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAA/UlEQVQ4ja3SPyuGURgG8N/jXd7XRhabgWKWEqWIgbL4EMQmk0HeQSIfwWfgA8hksMugSITJIJM/pRiex+t0nOftKa7pnPu+7qvrPtfhj6hV4KyiB3f4iJsdFQR68YQNLCErI2aYStSbwXkMu6FI6GAFz6i3cXaKAyzHjQZ2AtEm+susFtxOfh5xFme4xyeucYJHnCcE3jGIq+/CGroi0kIhtp4Q6Jan09o183vvQ2ziJSFQE6Uxj4kEsQyTmAsLDXk8VbEnT6tl+xUPGK0wPI5bvMWNDNsYbjM8gi3B/vG3zLCIPhzhoqgPYQY32I8HUqhjGgPF/RLH8vz/F1+T0ycUy1HYAAAAAABJRU5ErkJggg==" />
+					<span id="time">0.00s</span>
+				</div>
 			</div>
+		</div>
+		<div id="sensorSettings">
+			<svg id="quadcopter">
+				<image x="13" y="13" width="53" height="53" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAPvSURBVHja3Fo9UuswEN4wr0dFDiAKatQQSkRBjY9gCmrMCTycIHAChRN4qClM69eY1BR2bxe+wb7KfoqRHFvagAfNbJNJVtkfffp2V4CIQCFVVWU+v0/TFKn+C4mSMAwRAFApha4GAQBKKdHXOYgIR+C5bm9vcbPZAMV6f3+H6+vrVV3XmZciH4/EcYwAgACAjDEvL3POO11hGOKPpF+bMq2s12uvP5IkyY6+JEnw243SPSulJDnkQRB0OjnnzpF32lwptZN2RVEgFYLqzorjGL/FqP7GeZ6TQTEiQp7nyBjzOqd/xoBJWZa42WyAMQbb7RbKsgQAAKUUCCEWQLiEEIs0TfHq6gqapoG7u7vVzc0NlmUJQRCM22+K53RxvZNcIjZ1373KhRBfFPtC7liJoujL3pxzf6NM3gIAMnAYOru2vb2M6oOCLkIIEkpjEymlcd8x4DQqp00p2KbhIQxruaQp9VpUHDLM+GFRFJ1B7SVYFAWavEcZsaqqMtseLYsfY5hRsR6ZPtqs1+svmzLG0Ld0sKFdH5R0OmW7xwZDb0Mak2E+DMCmz4ayejSFEDho1BRSqfO0Q8hQWud5PujMBSICAEBd19np6emqaRoAAAiCAJIksd7edV1n5+fnq5Zd9BdjDO7v762X/svLCwz9Nk3TQfbw8PCAT09P3fc/Pz//LpfLix1GoddGYw9/32MmtFJKdbqqqsqUUlY0ncpWdD1RFOGX9GvzdCqa2c6Dq0xhKzqo6eXPzp8LgsAJnocuyiniWkNFUbQTXZLLUr/XfISKJB9RlAuc80Ucx956ttstTf1CSW8ookXRGjiiLPDCMIQ5LFKjLi8vf59RjLHfZ9Tr6+vvMqqu64yq/Twb9NNplqvoVOfH0a8sS3x+fvbWc3x8TBupJElmQZNcu05GmtSmz776/xBp55qCevlvJLQu/fH+5GNf6dFmxL7Ijp146KWHzu67IhEA4OTkBNvCTQgBeZ4PFol6UUldJOZ5Dpzz0UXizvddZ05U52ionB+bIf1yfrDVa+vWmNrBPpB80MaLKVf7XrC1yHwmf21rwNQN7u+vR2l0i6xfJregURQFmjpIQgiyGVVVVZlpjyAIOuByamaaDPvufrqt7aw7enLbeQ4DApthY+5RZ7ZAPRalHOXs5X6mGmn0mNJjLZfLC1MlzTn3Z+k21jDn8egOo9g3yG7X4+NjN8gOw5A8Yh8fH90gOwxDODs7g6ZpQEoJUsrFQeqpoVHPHJ4ckDzhobynfuRxyFiq4vuMx+cBF1mr2dWrs3pwRf1GaRZP40w3v+vzOP2MUjAV78aLUmoRRREJlEsp4e3t7f9E0HH9GwAhLduefZi9KQAAAABJRU5ErkJggg==" />
+			</svg>
+			<h3>Proximity sensors</h3>
+			<hr />
+			<div>Adjacents: <input type="checkbox" id="adjacentSensors" checked /></div>
+			<div>Number: <input type="number" id="sensors" value="8" /></div>
+			<div>Beam [deg]: <input type="number" id="beam" value="45" /></div>
 		</div>
 	</form>
 </div>
@@ -142,7 +162,36 @@ function newDestinations(center) {
 		nodes[i].init(coverageRadius, nodes.length, prev, next, masters.indexOf(i) >= 0 ? destinations[d] : null);
 		if (masters.indexOf(i) >= 0) d++;
 	}
-	
+}
+
+function drawSensors() {
+	var svg = document.getElementById('quadcopter');
+	var how = parseInt(document.getElementById('sensors').value);
+	var beam = Math.toRadians(parseFloat(document.getElementById('beam').value));
+	var adjacents = document.getElementById('adjacentSensors').checked;
+	while (svg.hasChildNodes() && svg.lastChild.tagName != 'image') svg.removeChild(svg.lastChild);
+	var x = 40, y = 40, r = 40, angle = beam / 2;
+	how = Math.min(how, Math.floor(2 * Math.PI / beam));
+	var startBeam = - beam * how / 2 + angle + Math.PI / 2;
+	for (var i = 0; i < how; i++) {
+		var position = adjacents ? startBeam + i * beam : i * 2 * Math.PI / how + Math.PI / 2;
+		var point1 = [ x + r * Math.cos(position + angle), y - r * Math.sin(position + angle) ];
+		var point2 = [ x + r * Math.cos(position - angle), y - r * Math.sin(position - angle) ];
+		var attrs = {
+			d:	'M' + point1.join(',') +
+				' L' + [ x , y ].join(',') +
+				' L' + point2.join(',') +
+				' A' + [ r, r ].join(',') + ' 0 0,0 ' + point1.join(','),
+			fill: '#a52a2a',
+			'fill-opacity': 0.35,
+			stroke: 'red',
+			'stroke-opacity': 0.2
+		};
+		var e = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+		for (var k in attrs) e.setAttribute(k, attrs[k]);
+		svg.appendChild(e);
+	}
+	document.getElementById('sensors').value = Math.max(0, how);
 }
 
 var PisaAirport = new Coordinates(43.696, 10.3981395);
@@ -173,7 +222,7 @@ var btnStart = document.getElementById('start');
 var btnStop = document.getElementById('stop');
 var btnPlay = document.getElementById('play');
 var btnPause = document.getElementById('pause');
-document.getElementById('settings').addEventListener('submit', function (e) {
+document.getElementById('controls').addEventListener('submit', function (e) {
 	e.preventDefault();
 	// check for input errors
 	var inNodes = document.getElementById('nodes');
@@ -225,5 +274,9 @@ btnStop.addEventListener('click', function () {
 		this.appendChild(document.createTextNode('Pause'));
 	}
 });
+document.getElementById('adjacentSensors').addEventListener('change', drawSensors);
+document.getElementById('sensors').addEventListener('change', drawSensors);
+document.getElementById('beam').addEventListener('change', drawSensors);
+document.getElementById('sensors').dispatchEvent(eventChange);
 </script>
 </body></html>

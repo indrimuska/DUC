@@ -26,7 +26,7 @@ function Map() {
 	});
 	map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('tilt'));
 	map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('fullscreen'));
-	map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('settings'));
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('controls'));
 	
 	this.init = function (end) {
 		endCallback = end;
