@@ -38,8 +38,8 @@ button>img{vertical-align:-1.5px;margin-right:3px;}
 #settings #total{position:absolute;left:143px;display:inline-block;bottom:0;min-width:initial;line-height:25px;white-space:nowrap;}
 #settings #total>img,#settings #total>span{vertical-align:middle;}
 #controls #sensorSettings{margin-top:10px;}
-#quadcopter{float:left;width:80px;height:80px;margin-right:10px;}
-#sensorSettings>h3{margin:0;padding:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:106px;}
+#quadcopter{float:left;width:80px;height:80px;margin-right:10px;margin-top:-5px;}
+#sensorSettings>h3{margin:0;padding:0;margin-bottom:10px;text-align:center;}
 #sensorSettings>hr{margin:4px 0px;}
 #sensorSettings>div{position:relative;}
 #controls #sensorSettings input{left:160px;width:30px;}
@@ -84,14 +84,14 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 			</div>
 		</div>
 		<div id="sensorSettings">
+			<h3>Ultrasonic sensors on board</h3>
 			<svg id="quadcopter">
 				<image x="13" y="13" width="53" height="53" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAPvSURBVHja3Fo9UuswEN4wr0dFDiAKatQQSkRBjY9gCmrMCTycIHAChRN4qClM69eY1BR2bxe+wb7KfoqRHFvagAfNbJNJVtkfffp2V4CIQCFVVWU+v0/TFKn+C4mSMAwRAFApha4GAQBKKdHXOYgIR+C5bm9vcbPZAMV6f3+H6+vrVV3XmZciH4/EcYwAgACAjDEvL3POO11hGOKPpF+bMq2s12uvP5IkyY6+JEnw243SPSulJDnkQRB0OjnnzpF32lwptZN2RVEgFYLqzorjGL/FqP7GeZ6TQTEiQp7nyBjzOqd/xoBJWZa42WyAMQbb7RbKsgQAAKUUCCEWQLiEEIs0TfHq6gqapoG7u7vVzc0NlmUJQRCM22+K53RxvZNcIjZ1373KhRBfFPtC7liJoujL3pxzf6NM3gIAMnAYOru2vb2M6oOCLkIIEkpjEymlcd8x4DQqp00p2KbhIQxruaQp9VpUHDLM+GFRFJ1B7SVYFAWavEcZsaqqMtseLYsfY5hRsR6ZPtqs1+svmzLG0Ld0sKFdH5R0OmW7xwZDb0Mak2E+DMCmz4ayejSFEDho1BRSqfO0Q8hQWud5PujMBSICAEBd19np6emqaRoAAAiCAJIksd7edV1n5+fnq5Zd9BdjDO7v762X/svLCwz9Nk3TQfbw8PCAT09P3fc/Pz//LpfLix1GoddGYw9/32MmtFJKdbqqqsqUUlY0ncpWdD1RFOGX9GvzdCqa2c6Dq0xhKzqo6eXPzp8LgsAJnocuyiniWkNFUbQTXZLLUr/XfISKJB9RlAuc80Ucx956ttstTf1CSW8ookXRGjiiLPDCMIQ5LFKjLi8vf59RjLHfZ9Tr6+vvMqqu64yq/Twb9NNplqvoVOfH0a8sS3x+fvbWc3x8TBupJElmQZNcu05GmtSmz776/xBp55qCevlvJLQu/fH+5GNf6dFmxL7Ijp146KWHzu67IhEA4OTkBNvCTQgBeZ4PFol6UUldJOZ5Dpzz0UXizvddZ05U52ionB+bIf1yfrDVa+vWmNrBPpB80MaLKVf7XrC1yHwmf21rwNQN7u+vR2l0i6xfJregURQFmjpIQgiyGVVVVZlpjyAIOuByamaaDPvufrqt7aw7enLbeQ4DApthY+5RZ7ZAPRalHOXs5X6mGmn0mNJjLZfLC1MlzTn3Z+k21jDn8egOo9g3yG7X4+NjN8gOw5A8Yh8fH90gOwxDODs7g6ZpQEoJUsrFQeqpoVHPHJ4ckDzhobynfuRxyFiq4vuMx+cBF1mr2dWrs3pwRf1GaRZP40w3v+vzOP2MUjAV78aLUmoRRREJlEsp4e3t7f9E0HH9GwAhLduefZi9KQAAAABJRU5ErkJggg==" />
 			</svg>
-			<h3>Proximity sensors</h3>
-			<hr />
-			<div>Adjacents: <input type="checkbox" id="adjacentSensors" checked /></div>
+			<div>Adjacents: <input type="checkbox" id="adjacentSensors" /></div>
 			<div>Number: <input type="number" id="sensors" value="8" /></div>
-			<div>Beam [deg]: <input type="number" id="beam" value="45" /></div>
+			<div>Beam [deg]: <input type="number" id="sensorBeam" value="40" /></div>
+			<div>Distance [m]: <input type="number" id="sensorDistance" value="2.5" /></div>
 		</div>
 	</form>
 </div>
@@ -166,8 +166,10 @@ function newDestinations(center) {
 
 function drawSensors() {
 	var svg = document.getElementById('quadcopter');
-	var how = parseInt(document.getElementById('sensors').value);
-	var beam = Math.toRadians(parseFloat(document.getElementById('beam').value));
+	var inSensors = document.getElementById('sensors');
+	var inBeam = document.getElementById('sensorBeam');
+	var how = parseInt(inSensors.value);
+	var beam = Math.toRadians(parseFloat(inBeam.value));
 	var adjacents = document.getElementById('adjacentSensors').checked;
 	while (svg.hasChildNodes() && svg.lastChild.tagName != 'image') svg.removeChild(svg.lastChild);
 	var x = 40, y = 40, r = 40, angle = beam / 2;
@@ -182,16 +184,17 @@ function drawSensors() {
 				' L' + [ x , y ].join(',') +
 				' L' + point2.join(',') +
 				' A' + [ r, r ].join(',') + ' 0 0,0 ' + point1.join(','),
-			fill: '#a52a2a',
+			fill: '#428bca',
 			'fill-opacity': 0.35,
-			stroke: 'red',
+			stroke: 'blue',
 			'stroke-opacity': 0.2
 		};
 		var e = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 		for (var k in attrs) e.setAttribute(k, attrs[k]);
 		svg.appendChild(e);
 	}
-	document.getElementById('sensors').value = Math.max(0, how);
+	inSensors.value = Math.max(0, how);
+	inBeam.value = Math.max(0, Math.min(180, Math.toDegrees(beam)));
 }
 
 var PisaAirport = new Coordinates(43.696, 10.3981395);
@@ -276,7 +279,7 @@ btnStop.addEventListener('click', function () {
 });
 document.getElementById('adjacentSensors').addEventListener('change', drawSensors);
 document.getElementById('sensors').addEventListener('change', drawSensors);
-document.getElementById('beam').addEventListener('change', drawSensors);
+document.getElementById('sensorBeam').addEventListener('change', drawSensors);
 document.getElementById('sensors').dispatchEvent(eventChange);
 </script>
 </body></html>
