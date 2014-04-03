@@ -32,7 +32,7 @@ button>img{vertical-align:-1.5px;margin-right:3px;}
 #controls input.error{color:#a94442;font-weight:bold;}
 #controls input[disabled]{opacity:0.6;cursor:not-allowed}
 #controls input[type=number],#settings input[type=text]{width:50px;}
-#controls input[type=range]{position:relative;display:block;left:0;width:190px;padding:1px;}
+#controls input[type=range]{position:relative;display:block;left:0;width:190px;padding:1px;border:0;}
 #settings label{position:absolute;left:120px;}
 #settings label>input{position:relative;left:initial;display:block;}
 #settings #total{position:absolute;left:143px;display:inline-block;bottom:0;min-width:initial;line-height:25px;white-space:nowrap;}
@@ -84,13 +84,13 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 			</div>
 		</div>
 		<div id="sensorSettings">
-			<h3>Ultrasonic sensors on board</h3>
+			<h3>Proximity sensors on board</h3>
 			<svg id="quadcopter">
 				<image x="13" y="13" width="53" height="53" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAPvSURBVHja3Fo9UuswEN4wr0dFDiAKatQQSkRBjY9gCmrMCTycIHAChRN4qClM69eY1BR2bxe+wb7KfoqRHFvagAfNbJNJVtkfffp2V4CIQCFVVWU+v0/TFKn+C4mSMAwRAFApha4GAQBKKdHXOYgIR+C5bm9vcbPZAMV6f3+H6+vrVV3XmZciH4/EcYwAgACAjDEvL3POO11hGOKPpF+bMq2s12uvP5IkyY6+JEnw243SPSulJDnkQRB0OjnnzpF32lwptZN2RVEgFYLqzorjGL/FqP7GeZ6TQTEiQp7nyBjzOqd/xoBJWZa42WyAMQbb7RbKsgQAAKUUCCEWQLiEEIs0TfHq6gqapoG7u7vVzc0NlmUJQRCM22+K53RxvZNcIjZ1373KhRBfFPtC7liJoujL3pxzf6NM3gIAMnAYOru2vb2M6oOCLkIIEkpjEymlcd8x4DQqp00p2KbhIQxruaQp9VpUHDLM+GFRFJ1B7SVYFAWavEcZsaqqMtseLYsfY5hRsR6ZPtqs1+svmzLG0Ld0sKFdH5R0OmW7xwZDb0Mak2E+DMCmz4ayejSFEDho1BRSqfO0Q8hQWud5PujMBSICAEBd19np6emqaRoAAAiCAJIksd7edV1n5+fnq5Zd9BdjDO7v762X/svLCwz9Nk3TQfbw8PCAT09P3fc/Pz//LpfLix1GoddGYw9/32MmtFJKdbqqqsqUUlY0ncpWdD1RFOGX9GvzdCqa2c6Dq0xhKzqo6eXPzp8LgsAJnocuyiniWkNFUbQTXZLLUr/XfISKJB9RlAuc80Ucx956ttstTf1CSW8ookXRGjiiLPDCMIQ5LFKjLi8vf59RjLHfZ9Tr6+vvMqqu64yq/Twb9NNplqvoVOfH0a8sS3x+fvbWc3x8TBupJElmQZNcu05GmtSmz776/xBp55qCevlvJLQu/fH+5GNf6dFmxL7Ijp146KWHzu67IhEA4OTkBNvCTQgBeZ4PFol6UUldJOZ5Dpzz0UXizvddZ05U52ionB+bIf1yfrDVa+vWmNrBPpB80MaLKVf7XrC1yHwmf21rwNQN7u+vR2l0i6xfJregURQFmjpIQgiyGVVVVZlpjyAIOuByamaaDPvufrqt7aw7enLbeQ4DApthY+5RZ7ZAPRalHOXs5X6mGmn0mNJjLZfLC1MlzTn3Z+k21jDn8egOo9g3yG7X4+NjN8gOw5A8Yh8fH90gOwxDODs7g6ZpQEoJUsrFQeqpoVHPHJ4ckDzhobynfuRxyFiq4vuMx+cBF1mr2dWrs3pwRf1GaRZP40w3v+vzOP2MUjAV78aLUmoRRREJlEsp4e3t7f9E0HH9GwAhLduefZi9KQAAAABJRU5ErkJggg==" />
 			</svg>
 			<div>Adjacents: <input type="checkbox" id="adjacentSensors" /></div>
 			<div>Number: <input type="number" id="sensors" value="8" /></div>
-			<div>Beam [deg]: <input type="number" id="sensorBeam" value="40" /></div>
+			<div>Beam [deg]: <input type="number" id="beamWidth" value="40" /></div>
 			<div>Distance [m]: <input type="number" id="sensorDistance" value="2.5" /></div>
 		</div>
 	</form>
@@ -101,6 +101,7 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="src/MarkerWithLabel.js"></script>
 <script src="src/Coordinates.js"></script>
+<script src="src/Sensor.js"></script>
 <script src="src/Node.js"></script>
 <script src="src/Map.js"></script>
 <script>
@@ -152,14 +153,20 @@ function newDestinations(center) {
 		masters.push(node);
 	}
 	masters.push(nodes.length - 1);
-	// assing destinations
+	// initialize nodes and assign a destination to each master
 	var d = 0;
+	var sensors = {
+		number: parseInt(document.getElementById('sensors').value),
+		ajacents: document.getElementById('adjacentSensors').checked,
+		beam: Math.toRadians(parseFloat(document.getElementById('beamWidth').value)),
+		distance: parseFloat(document.getElementById('sensorDistance').value)
+	};
 	for (var i = 0; i < nodes.length; i++) {
 		var prev = i > 0 ? nodes[i-1].position() : null;
 		var next = i < nodes.length-1 ? nodes[i+1].position() : null;
 		if (prev) prev.receive = nodes[i-1].receive;
 		if (next) next.receive = nodes[i+1].receive;
-		nodes[i].init(coverageRadius, nodes.length, prev, next, masters.indexOf(i) >= 0 ? destinations[d] : null);
+		nodes[i].init(coverageRadius, nodes.length, prev, next, masters.indexOf(i) >= 0 ? destinations[d] : null, sensors);
 		if (masters.indexOf(i) >= 0) d++;
 	}
 }
@@ -167,16 +174,16 @@ function newDestinations(center) {
 function drawSensors() {
 	var svg = document.getElementById('quadcopter');
 	var inSensors = document.getElementById('sensors');
-	var inBeam = document.getElementById('sensorBeam');
+	var inBeam = document.getElementById('beamWidth');
 	var how = parseInt(inSensors.value);
 	var beam = Math.toRadians(parseFloat(inBeam.value));
 	var adjacents = document.getElementById('adjacentSensors').checked;
 	while (svg.hasChildNodes() && svg.lastChild.tagName != 'image') svg.removeChild(svg.lastChild);
 	var x = 40, y = 40, r = 40, angle = beam / 2;
 	how = Math.min(how, Math.floor(2 * Math.PI / beam));
-	var startBeam = - beam * how / 2 + angle + Math.PI / 2;
+	var startBeam = - beam * how / 2 + angle;
 	for (var i = 0; i < how; i++) {
-		var position = adjacents ? startBeam + i * beam : i * 2 * Math.PI / how + Math.PI / 2;
+		var position = Math.PI / 2 + (adjacents ? startBeam + i * beam : i * 2 * Math.PI / how);
 		var point1 = [ x + r * Math.cos(position + angle), y - r * Math.sin(position + angle) ];
 		var point2 = [ x + r * Math.cos(position - angle), y - r * Math.sin(position - angle) ];
 		var attrs = {
@@ -243,7 +250,7 @@ document.getElementById('controls').addEventListener('submit', function (e) {
 	btnStop.disabled = false;
 	btnStop.appendChild(btnPause.cloneNode());
 	btnStop.appendChild(document.createTextNode('Pause'));
-	var uiSet = [ 'nodes', 'destinations', 'coverage' ];
+	var uiSet = [ 'nodes', 'destinations', 'coverage', 'adjacentSensors', 'sensors', 'beamWidth', 'sensorDistance' ];
 	for (var i in uiSet) document.getElementById(uiSet[i]).disabled = true;
 	// init
 	time = 0;
@@ -279,7 +286,7 @@ btnStop.addEventListener('click', function () {
 });
 document.getElementById('adjacentSensors').addEventListener('change', drawSensors);
 document.getElementById('sensors').addEventListener('change', drawSensors);
-document.getElementById('sensorBeam').addEventListener('change', drawSensors);
+document.getElementById('beamWidth').addEventListener('change', drawSensors);
 document.getElementById('sensors').dispatchEvent(eventChange);
 </script>
 </body></html>

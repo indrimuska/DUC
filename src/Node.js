@@ -1,5 +1,6 @@
 // requires:
 //    - src/Coordinates.js
+//    - src/Sensor.js
 
 // UAV class
 function Node(number, coordinates, orientation) {
@@ -35,6 +36,11 @@ function Node(number, coordinates, orientation) {
 	var refuseLimit		= 3;
 	var rotationPole	= 0.8;				// LPF pole of rotation
 	var movingPole		= 0.8;				// LPF pole of moving
+	
+	// proximity sensors
+	var sensors = [];
+	var sensorDistance;
+	var sensorBeamWidth;
 	
 	// SOM functions
 	function learningRateUpdate() {
@@ -154,7 +160,7 @@ function Node(number, coordinates, orientation) {
 		// new orientation angle
 		return orientation + difference * moltiplier;
 	}
-	function getTargetPoint(destination, master, alpha, sigma, phi) {
+	function getTargetPoint(destination, obVector, master, alpha, sigma, phi) {
 		// check if the node falls in the neighborhood of master +/- sigma
 		if (!isInNeighbourhood(number, master, sigma)) return false;
 		// if master is arrived, it doesn't move
@@ -165,15 +171,17 @@ function Node(number, coordinates, orientation) {
 		var distance = alpha * phi * Math.min(estimateMoving(), coordinates.greatCircleDistanceTo(destination));
 		// compute (imminent) target
 		var target = coordinates.destination(direction, distance);
+		// applicate obstacle vector
+		var combinedTarget = combineObVector(target, obVector);
 		// check if the target is inside the circles of neighbours
-		if ((!prevNode || isInsideCircle(target, prevNode.coordinates, radius)) &&
-			(!nextNode || isInsideCircle(target, nextNode.coordinates, radius)))
-			return target;
+		if ((!prevNode || isInsideCircle(combinedTarget, prevNode.coordinates, radius)) &&
+			(!nextNode || isInsideCircle(combinedTarget, nextNode.coordinates, radius)))
+			return combinedTarget;
 		// compute new points of intersection between neighbour circles and the line in the direction of the target
 		var points = directionPoints(coordinates, target);
 		// choose the one inside both circles (at most 2) and in the right direction (only one)
 		for (var i = 0; i < points.length; i++) {
-			var point = points[i];
+			var point = combineObVector(points[i], obVector);
 			var isInsidePrev = !prevNode || isInsideCircle(point, prevNode.coordinates, radius);
 			var isInsideNext = !nextNode || isInsideCircle(point, nextNode.coordinates, radius);
 			var sameDirection = Math.abs(coordinates.initialBearingTo(point) - direction) <= precision;
@@ -194,6 +202,30 @@ function Node(number, coordinates, orientation) {
 			(1 - movingPole) * coordinates.lng + movingPole * destination.lng,
 			(1 - movingPole) * coordinates.alt + movingPole * destination.alt
 		);
+	}
+	
+	// collision detection
+	function detectObstacles() {
+		var vector = { x: 0, y: 0, z: 0 };
+		var dSensors = [];
+		for (var i in sensors)
+			if (sensors[i].getValue() != null)
+				dSensors.push(sensors[i]);
+		// no obstacles found
+		if (dSensors.length == 0) return vector;
+		// obstacles detected on one or more sensors
+		for (var i in dSensors) {
+			var module = sensorDistance - dSensors[i].getValue();
+			vector.x += module * Math.cos(orientation - dSensors[i].getPosition() + Math.PI);
+			vector.y += module * Math.sin(orientation - dSensors[i].getPosition() + Math.PI);
+		}
+		return vector;
+	}
+	function combineObVector(destination, obVector) {
+		var point = destination.toMercatorProjectionVariant();
+		var coords = [ 'x', 'y', 'z' ];
+		for (var i in coords) point[coords[i]] += obVector[coords[i]];
+		return new Coordinates().fromMercatorProjectionVariant(point, destination.lat);
 	}
 	
 	// main
@@ -233,8 +265,19 @@ function Node(number, coordinates, orientation) {
 	}
 	function move(target, master, alpha, sigma) {
 		var rotation, destination;
-		// calculate possible destinations (middle point is for prevent deadlock on moving)
-		var destinations = arrival ? [ arrival ] : [ target, middlePoint() ];
+		// calculate possible destinations (middle point is to avoid deadlock on moving)
+		var destinations = arrival ? [ target ] : [ middlePoint() ];
+		// read from proximity sensors
+		var obVector = detectObstacles();
+		// add points to avoid deadlock on moving caused by collision avoidance algorithm
+		if (obVector.length > 0) {
+			// random integer between -1 and +1
+			var randomDirection = (Math.floor(Math.random() * 2) - 0.5) * 2;
+			// final bearing
+			var bearing = coordinates.initialBearingTo(target) + randomDirection * sensorBeamWidth;
+			// point destination
+			destinations.push(coordinates.destination(bearing, 2)); // 2 meters
+		}
 		// neighbourhood constant
 		var phi = neighbourhoodFunction(number - master, sigma);
 		// iterate possible destinations
@@ -242,7 +285,7 @@ function Node(number, coordinates, orientation) {
 			// calculate destination angle
 			rotation = getOrientation(destinations[i]);
 			// calculate destination inside neighobur circles
-			destination = getTargetPoint(destinations[i], master, alpha, sigma, phi);
+			destination = getTargetPoint(destinations[i], obVector, master, alpha, sigma, phi);
 			// destination founded
 			if (destination) break;
 		}
@@ -297,7 +340,7 @@ function Node(number, coordinates, orientation) {
 	}
 	
 	// public methods
-	this.init = function (iRadius, iNodes, iPrevNode, iNextNode, iArrival) { // damned Apple, "i" stands for "input"
+	this.init = function (iRadius, iNodes, iPrevNode, iNextNode, iArrival, iSensors) { // damned Apple, "i" stands for "input"
 		// stop previous execution
 		this.stop();
 		// reset old values
@@ -307,6 +350,7 @@ function Node(number, coordinates, orientation) {
 		refuseCounter = 0;
 		lastUpdateTime = new Date();
 		command = { target: null, master: null, alpha: null, sigma: null };
+		sensors = [];
 		// new values
 		radius	= iRadius;
 		nodes	= iNodes;
@@ -317,6 +361,14 @@ function Node(number, coordinates, orientation) {
 		if (number < nodes-1) nextNode = new Neighbour(number + 1, iNextNode.coordinates, iNextNode.orientation, iNextNode.receive);
 		// master's settings
 		if (arrival) command = { target: arrival, master: number, alpha: alphaZero, sigma: sigmaZero };
+		// sensors
+		sensorBeamWidth = iSensors.beam;
+		sensorDistance = iSensors.distance;
+		for (var i = 0; i < iSensors.number; i++)
+			sensors.push(new Sensor(number, i,
+				iSensors.adjacents ? - iSensors.beam * iSensors.number / 2 + angle + i * iSensors.beam : i * 2 * Math.PI / iSensors.number,
+				iSensors.beam, iSensors.distance
+			));
 	}
 	this.start = function () {
 		// start timer
@@ -353,7 +405,7 @@ function Node(number, coordinates, orientation) {
 						// masters stop propagation
 						if (arrival) return;
 						// target already set
-						if (command.target && command.target != message.target && ++refuseCounter > refuseLimit)
+						if (command.target && command.target.greatCircleDistanceTo(message.target) > precision  && ++refuseCounter > refuseLimit)
 							refuseCounter = 0;
 						// update command
 						if (refuseCounter == 0)
@@ -368,7 +420,7 @@ function Node(number, coordinates, orientation) {
 						// masters stop propagation
 						if (arrival) return;
 						// remove target
-						if (command.target == message.target) command.target = null;
+						if (command.target.greatCircleDistanceTo(message.target) < precision) command.target = null;
 						// inform NEXT neighbour (by propagation)
 						var next = 2 * number - message.node;
 						sendArrived(next, message.master, message.target);
