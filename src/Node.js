@@ -221,10 +221,13 @@ function Node(number, coordinates, orientation) {
 		}
 		return vector;
 	}
+	function obstacleDetected(obVector) {
+		return Math.abs(obVector.x) + Math.abs(obVector.y) + Math.abs(obVector.z) > 0;
+	}
 	function combineObVector(destination, obVector) {
+		if (!obstacleDetected(obVector)) return destination;
 		var point = destination.toMercatorProjectionVariant();
-		var coords = [ 'x', 'y', 'z' ];
-		for (var i in coords) point[coords[i]] += obVector[coords[i]];
+		[ 'x', 'y', 'z' ].forEach(function (c) { point[c] += obVector[c]; });
 		return new Coordinates().fromMercatorProjectionVariant(point, destination.lat);
 	}
 	
@@ -266,17 +269,21 @@ function Node(number, coordinates, orientation) {
 	function move(target, master, alpha, sigma) {
 		var rotation, destination;
 		// calculate possible destinations (middle point is to avoid deadlock on moving)
-		var destinations = arrival ? [ target ] : [ middlePoint() ];
+		var destinations = arrival ? [ target ] : [ middlePoint(), target ];
 		// read from proximity sensors
 		var obVector = detectObstacles();
 		// add points to avoid deadlock on moving caused by collision avoidance algorithm
-		if (obVector.length > 0) {
+		if (obstacleDetected(obVector)) {
 			// random integer between -1 and +1
 			var randomDirection = (Math.floor(Math.random() * 2) - 0.5) * 2;
+			// initial bearing
+			var initialBearing = coordinates.initialBearingTo(target);
 			// final bearing
-			var bearing = coordinates.initialBearingTo(target) + randomDirection * sensorBeamWidth;
-			// point destination
-			destinations.push(coordinates.destination(bearing, 2)); // 2 meters
+			var finalBearing = initialBearing + randomDirection * Math.PI / 2;
+			// possible destination on the left or right (random)
+			destinations.push(coordinates.destination(finalBearing, 10));
+			// possible destination on the back of the node
+			destinations.push(coordinates.destination(initialBearing + Math.PI, 10));
 		}
 		// neighbourhood constant
 		var phi = neighbourhoodFunction(number - master, sigma);
@@ -287,7 +294,7 @@ function Node(number, coordinates, orientation) {
 			// calculate destination inside neighobur circles
 			destination = getTargetPoint(destinations[i], obVector, master, alpha, sigma, phi);
 			// destination founded
-			if (destination) break;
+			if (destination && !isArrived(destination)) break;
 		}
 		// rotate
 		orientation = simulateRotation(rotation);

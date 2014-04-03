@@ -107,9 +107,10 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 <script>
 // random in range
 function random(min, max) { return (1 - Math.random()) * (max - min) + min; }
+function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 // nodes, destinations and selected masters need to be global (required for the Map class)
-var nodes = [], destinations = [], masters = [], map = new Map();
+var nodes = [], destinations = [], masters = [], obstacles = [], map = new Map();
 
 // nodes and destinations initializer
 function newDestinations(center) {
@@ -128,19 +129,29 @@ function newDestinations(center) {
 	lastPosition = center;
 	var lastDirection = 0;
 	var ceilDistance = 0;
-	var destinationsPoints = parseInt(document.getElementById('destinations').value);
+	var avgLat = 0, avgLng = 0;
 	var coverageRadius = parseInt(document.getElementById('coverage').value);
+	var destinationsPoints = parseInt(document.getElementById('destinations').value);
 	var minDistance = coverageRadius;
 	var maxDistance = coverageRadius * (nodes.length - destinationsPoints + 1);
 	for (var i = 0; i < destinationsPoints; i++) {
 		lastDirection = lastDirection + random(-Math.PI / 3, Math.PI / 3);
 		lastPosition = lastPosition.destination(lastDirection, random(0.7 * (i == destinationsPoints-1 ? maxDistance : minDistance), 0.9 * maxDistance));
 		destinations[i] = lastPosition;
+		avgLat += lastPosition.lat;
+		avgLng += lastPosition.lng;
 		if (i == 0) continue;
 		var distance = destinations[i].greatCircleDistanceTo(destinations[i-1]);
 		var coveredDistance = Math.ceil((distance ? distance : 1) / coverageRadius) * coverageRadius;
 		ceilDistance += coveredDistance;
 		maxDistance -= coveredDistance - coverageRadius;
+	}
+	// adding some cylindric obstacles
+	obstacles = new Array(randomInt(2, 10));
+	lastPosition = new Coordinates(avgLat / destinationsPoints, avgLng / destinationsPoints).destination(Math.PI, obstacles.length * 10);
+	for (var i = 0; i < obstacles.length; i ++) {
+		lastPosition = lastPosition.destination(0, 20);
+		obstacles[i] = lastPosition;
 	}
 	// select masters
 	var node = 0;

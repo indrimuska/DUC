@@ -1,5 +1,5 @@
 // requires:
-//    - index.html (nodes, destinations, masters, UI-interface)
+//    - index.html (nodes, destinations, masters, obstacles, UI-interface)
 //    - https://maps.googleapis.com/maps/api/js?sensor=false
 //    - src/MarkerWithLabel.js
 //    - src/Coordinates.js
@@ -9,7 +9,7 @@
 function Map() {
 	// map variables
 	var that = this, endCallback, lastFitTime = new Date();
-	var mapNodes = [], mapDestinations = [], polyline, mapRefresh, running = false;
+	var mapNodes = [], mapDestinations = [], mapObstacles = [], polyline, mapRefresh, running = false;
 	var map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 3,
 		tilt: 0,
@@ -37,8 +37,11 @@ function Map() {
 		for (var i in mapNodes)
 			for (var j in mapNodes[i])
 				mapNodes[i][j].setMap(null);
+		for (var i in mapObstacles)
+			mapObstacles[i].setMap(null);
 		mapDestinations = [];
 		mapNodes = [];
+		mapObstacles = [];
 		// initialiaze new settings
 		if (destinations.length + nodes.length <= 0) return;
 		map.setMapTypeId(google.maps.MapTypeId.HYBRID);
@@ -85,6 +88,21 @@ function Map() {
 		// not intialized yet
 		if (destinations.length + nodes.length <= 0) return;
 		var scale, nodesGM = nodes.map(function (value) { return value.position().coordinates.toGoogleMaps(); });
+		// obstacles (simple black cylindres with infinite height)
+		if (!mapObstacles[0])
+			for (var i = 0; i < obstacles.length; i++)
+				mapObstacles[i] = new google.maps.Circle({
+					map: map,
+					center: obstacles[i].toGoogleMaps(),
+					radius: 2,
+					fillColor: '#333',
+					fillOpacity: 1,
+					strokeColor: 'black',
+					strokeWeight: 0.6,
+					strokeOpacity: 1,
+					clickable: false,
+					zIndex: 1
+				});
 		// destinations
 		for (var i = 0; i < destinations.length; i++) {
 			var destination = destinations[i].toGoogleMaps();
