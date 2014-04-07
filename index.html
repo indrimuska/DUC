@@ -89,9 +89,9 @@ hr{background:none;border:0;border-bottom:1px dashed #ccc;margin:10px 0;}
 				<image x="13" y="13" width="53" height="53" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAG2YAABzjgAA2e0AAIGfAAB/mgAA2GMAADIXAAAdLVvevdMAAAPvSURBVHja3Fo9UuswEN4wr0dFDiAKatQQSkRBjY9gCmrMCTycIHAChRN4qClM69eY1BR2bxe+wb7KfoqRHFvagAfNbJNJVtkfffp2V4CIQCFVVWU+v0/TFKn+C4mSMAwRAFApha4GAQBKKdHXOYgIR+C5bm9vcbPZAMV6f3+H6+vrVV3XmZciH4/EcYwAgACAjDEvL3POO11hGOKPpF+bMq2s12uvP5IkyY6+JEnw243SPSulJDnkQRB0OjnnzpF32lwptZN2RVEgFYLqzorjGL/FqP7GeZ6TQTEiQp7nyBjzOqd/xoBJWZa42WyAMQbb7RbKsgQAAKUUCCEWQLiEEIs0TfHq6gqapoG7u7vVzc0NlmUJQRCM22+K53RxvZNcIjZ1373KhRBfFPtC7liJoujL3pxzf6NM3gIAMnAYOru2vb2M6oOCLkIIEkpjEymlcd8x4DQqp00p2KbhIQxruaQp9VpUHDLM+GFRFJ1B7SVYFAWavEcZsaqqMtseLYsfY5hRsR6ZPtqs1+svmzLG0Ld0sKFdH5R0OmW7xwZDb0Mak2E+DMCmz4ayejSFEDho1BRSqfO0Q8hQWud5PujMBSICAEBd19np6emqaRoAAAiCAJIksd7edV1n5+fnq5Zd9BdjDO7v762X/svLCwz9Nk3TQfbw8PCAT09P3fc/Pz//LpfLix1GoddGYw9/32MmtFJKdbqqqsqUUlY0ncpWdD1RFOGX9GvzdCqa2c6Dq0xhKzqo6eXPzp8LgsAJnocuyiniWkNFUbQTXZLLUr/XfISKJB9RlAuc80Ucx956ttstTf1CSW8ookXRGjiiLPDCMIQ5LFKjLi8vf59RjLHfZ9Tr6+vvMqqu64yq/Twb9NNplqvoVOfH0a8sS3x+fvbWc3x8TBupJElmQZNcu05GmtSmz776/xBp55qCevlvJLQu/fH+5GNf6dFmxL7Ijp146KWHzu67IhEA4OTkBNvCTQgBeZ4PFol6UUldJOZ5Dpzz0UXizvddZ05U52ionB+bIf1yfrDVa+vWmNrBPpB80MaLKVf7XrC1yHwmf21rwNQN7u+vR2l0i6xfJregURQFmjpIQgiyGVVVVZlpjyAIOuByamaaDPvufrqt7aw7enLbeQ4DApthY+5RZ7ZAPRalHOXs5X6mGmn0mNJjLZfLC1MlzTn3Z+k21jDn8egOo9g3yG7X4+NjN8gOw5A8Yh8fH90gOwxDODs7g6ZpQEoJUsrFQeqpoVHPHJ4ckDzhobynfuRxyFiq4vuMx+cBF1mr2dWrs3pwRf1GaRZP40w3v+vzOP2MUjAV78aLUmoRRREJlEsp4e3t7f9E0HH9GwAhLduefZi9KQAAAABJRU5ErkJggg==" />
 			</svg>
 			<div>Adjacents: <input type="checkbox" id="adjacentSensors" /></div>
-			<div>Number: <input type="number" id="sensors" value="8" /></div>
-			<div>Beam [deg]: <input type="number" id="beamWidth" value="40" /></div>
-			<div>Distance [m]: <input type="number" id="sensorDistance" value="2.5" /></div>
+			<div>Number: <input type="number" id="sensors" min="0" step="1" value="8" /></div>
+			<div>Beam [deg]: <input type="number" id="beamWidth" min="0" max="180" value="40" /></div>
+			<div>Distance [m]: <input type="number" id="sensorDistance" min="0" step="0.5" value="2.5" /></div>
 		</div>
 	</form>
 </div>

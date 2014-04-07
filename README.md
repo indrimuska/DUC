@@ -91,13 +91,19 @@ This method is a variant of [secant projection](http://en.wikipedia.org/wiki/Mer
 
 <p align="center"><img alt="Secant Mercator projection" src="https://cloud.githubusercontent.com/assets/1561134/2566358/71afce04-b8c3-11e3-92fc-dcf7475193b2.png" /></p>
 
+### Sensor
+
+This class simulates the behavior of a single proximity sensor installed on the UAV. As the ultrasonic sensors, every proximity sensor has a fixed beam width (overture angle) of the main lobe and a maximum distance to detect obstacles. Users can set the number of the sensors and the position of the sensor on the autonomous system (in terms of angular position). The main purpose of this class is to make possible the execution of a simple **collision avoidance** algorithm between nodes, which simulates the real behavior of the external sensors.
+
+<p align="center"><img alt="Proximity sensors on board" src="https://cloud.githubusercontent.com/assets/1561134/2629271/92905748-be35-11e3-8aac-ff41e3d6f4d7.png" /></p>
+
 ### Map
 
 It's just a Google Maps wrapper that deals to draw nodes, destinations and the network polyline across the nodes. It also has the ability to "follow" nodes during moving adapting zoom value and map bounds dynamically (only if `#follow` checkbox is checked).
 
 > **Note:** to draw node and destination IDs, `Map` make use of an external project called [Marker With Label](https://code.google.com/p/google-maps-utility-library-v3/wiki/Libraries#Marker_With_Label).
 
-<p align="center"><img alt="DUC map" src="https://cloud.githubusercontent.com/assets/1561134/2566360/71c7754a-b8c3-11e3-9d30-392868b3fb74.png" /></p>
+<p align="center"><img alt="DUC map" src="https://cloud.githubusercontent.com/assets/1561134/2629299/f8b75c4c-be35-11e3-85c5-598ca1ec17dd.png" /></p>
 
 ## Author
 
